@@ -20,7 +20,7 @@ jobs:
     # Build the server Docker image
     - name: Build server Docker image
       run: |
-        docker build -t my-server:latest
+        docker build -t my-server:latest . 
 
     # Clone the python-zenoh-client repository for the test Docker image
     - name: Checkout test repository
