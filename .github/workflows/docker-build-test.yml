@@ -1,0 +1,55 @@
+name: Build and Test with Docker
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the current repository
+    - name: Checkout source code
+      uses: actions/checkout@v3
+
+    # Build the server Docker image
+    - name: Build server Docker image
+      run: |
+        docker build -t my-server:latest ./server
+
+    # Clone the python-zenoh-client repository for the test Docker image
+    - name: Checkout test repository
+      uses: actions/checkout@v3
+      with:
+        repository: ovidiu-vacaru/python-zenoh-client
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        path: python-zenoh-client
+
+    # Build the test Docker image
+    - name: Build test Docker image
+      run: |
+        cd python-zenoh-client
+        docker build -t my-tester:latest .
+
+    # Run the server container
+    - name: Start server container
+      run: |
+        docker run -d --name server-container -p 8080:8080 my-server:latest
+
+    # Run the test container
+    - name: Run tests
+      run: |
+        docker run --network host my-tester:latest
+
+    # Stop and cleanup containers
+    - name: Cleanup
+      run: |
+        docker stop server-container
+        docker rm server-container
+        docker rmi my-server:latest my-tester:latest
+
