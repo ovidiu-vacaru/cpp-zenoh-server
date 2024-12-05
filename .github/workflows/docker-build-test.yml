@@ -42,10 +42,15 @@ jobs:
       run: |
         docker run -d --network host my-server:latest
 
-    # Run the test container
+    # Run the test container and log output
     - name: Run tests
       run: |
-        docker run -it --network host my-tester:latest
+        docker run --network host my-tester:latest > test-log.txt
+
+    # Print the test log
+    - name: Print test log
+      run: |
+        cat test-log.txt
 
     # Stop and cleanup containers
     - name: Cleanup
