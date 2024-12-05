@@ -27,7 +27,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: ovidiu-vacaru/python-zenoh-client
-        token: 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
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         ref: main  # Explicitly set the branch name
         path: python-zenoh-client
 
