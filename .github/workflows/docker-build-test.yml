@@ -36,29 +36,36 @@ jobs:
       run: |
         cd python-zenoh-client
         docker build -t my-tester:latest .
-        
-        
-    # Run the test container and log output
-    - name: Run tests
-      run: |
-        docker run -d --network host my-tester:latest > test-log.txt
 
-        
-    # Run the server container
+    # Run the test container and log output
+    - name: Start test container and capture logs
+      run: |
+        docker run -d --network host --name my-tester-container my-tester:latest
+        docker logs -f my-tester-container > test-log.txt 2>&1 &
+
+    # Wait briefly for the test container initialization
+    - name: Wait for test container initialization
+      run: |
+        sleep 10
+
+    # Start the server container
     - name: Start server container
       run: |
-        docker run --network host my-server:latest
+        docker run -d --network host --name my-server-container my-server:latest
 
+    # Wait for tests to complete
+    - name: Wait for tests
+      run: |
+        docker wait my-tester-container || true
 
     # Print the test log
     - name: Print test log
       run: |
         cat test-log.txt
 
-    # Stop and cleanup containers
+    # Stop and cleanup containers and images
     - name: Cleanup
       run: |
-        docker stop $(docker ps -q --filter ancestor=my-server:latest)
-        docker rm $(docker ps -q --filter ancestor=my-server:latest)
-        docker rmi my-server:latest my-tester:latest
-
+        docker stop my-server-container my-tester-container || true
+        docker rm my-server-container my-tester-container || true
+        docker rmi my-server:latest my-tester:latest || true
