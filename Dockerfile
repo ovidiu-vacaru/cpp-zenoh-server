@@ -42,7 +42,7 @@ COPY . /app
 RUN mkdir build && cd build && cmake .. && cmake --build .
 
 
-CMD ["sh", "-c", "sleep 20 && ./build/main"]
+CMD ["sh", "-c", "sleep 50 && ./build/main"]
 
 
 

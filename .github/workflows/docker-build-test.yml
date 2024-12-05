@@ -26,9 +26,11 @@ jobs:
     - name: Checkout test repository
       uses: actions/checkout@v3
       with:
-        repository: ovidiu-vacaru/python-zenoh-client
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        path: python-zenoh-client
+	repository: ovidiu-vacaru/python-zenoh-client
+	token: ${{ secrets.REPO_ACCESS_TOKEN }}
+	ref: main  # Explicitly set the branch name
+	path: python-zenoh-client
+
 
     # Build the test Docker image
     - name: Build test Docker image
@@ -46,7 +48,7 @@ jobs:
      # Run the test container
     - name: Run tests
       run: |
-        docker run --network host my-tester:latest
+        docker run -it --network host my-tester:latest
 
 
    
