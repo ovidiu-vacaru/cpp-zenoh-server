@@ -35,17 +35,21 @@ jobs:
       run: |
         cd python-zenoh-client
         docker build -t my-tester:latest .
-
+        
+        
     # Run the server container
     - name: Start server container
       run: |
-        docker run -d --name server-container -p 8080:8080 my-server:latest
+        docker run -d --network host my-server:latest
 
-    # Run the test container
+        
+     # Run the test container
     - name: Run tests
       run: |
         docker run --network host my-tester:latest
 
+
+   
     # Stop and cleanup containers
     - name: Cleanup
       run: |
